@@ -27,8 +27,27 @@ import * as commitMessageChecker from './commit-message-checker'
  */
 async function run(): Promise<void> {
   try {
+    const commitsString = core.getInput('commits')
+    const commits = JSON.parse(commitsString)
     const checkerArguments = inputHelper.getInputs()
-    await commitMessageChecker.checkCommitMessages(checkerArguments)
+
+    const failed = []
+
+    for (const {commit, sha} of commits) {
+      inputHelper.checkArgs(checkerArguments)
+      let errMsg = commitMessageChecker.checkCommitMessages(checkerArguments, commit.message)
+
+      if (errMsg) {
+        failed.push({sha, message: errMsg})
+      }
+    }
+
+    if (failed.length > 0) {
+      const summary = inputHelper.getOutput(failed)
+      core.setFailed(summary)
+    }
+
+
   } catch (error) {
     core.error(error)
     core.setFailed(error.message)

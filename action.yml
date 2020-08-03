@@ -1,7 +1,10 @@
-name: 'GS Commit Message Checker'
-description: 'Check the commit message against a regex pattern'
-author: 'Gilbertsoft LLC'
+name: 'Commit Message Checker for pull request'
+description: 'Check the commit message in pr against a regex pattern'
+author: 'Tim'
 inputs:
+  commits:
+    description: 'commits in json format'
+    required: true
   pattern:
     description: 'A regex pattern to check if a commit message is valid.'
     required: true
@@ -16,5 +19,5 @@ runs:
   using: node12
   main: dist/index.js
 branding:
-  icon: 'check'  
+  icon: 'check'
   color: 'blue'

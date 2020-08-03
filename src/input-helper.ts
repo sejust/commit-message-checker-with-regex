@@ -39,62 +39,33 @@ export function getInputs(): ICheckerArguments {
   // Get error message
   result.error = core.getInput('error', {required: true})
 
-  // Get error message
-  result.messages = getMessages()
-
   return result
 }
 
-/**
- * Gets all commit messages of a push or title and body of a pull request
- * concatenated to one message.
- *
- * @returns   string[]
- */
-function getMessages(): string[] {
-  const messages: string[] = []
+export function checkArgs(args: any) {
+    // Check arguments
+    if (args.pattern.length === 0) {
+      throw new Error(`PATTERN not defined.`)
+    }
 
-  switch (github.context.eventName) {
-    case 'pull_request': {
-      if (
-        github.context.payload &&
-        github.context.payload.pull_request &&
-        github.context.payload.pull_request.title
-      ) {
-        let message: string = github.context.payload.pull_request.title
-        if (github.context.payload.pull_request.body) {
-          message = message.concat(
-            '\n\n',
-            github.context.payload.pull_request.body
-          )
-        }
-        messages.push(message)
-      } else {
-        throw new Error(`No pull_request found in the payload.`)
-      }
-      break
+    const regex = new RegExp('[^gimsuy]', 'g')
+    let invalidChars
+    let chars = ''
+    while ((invalidChars = regex.exec(args.flags)) !== null) {
+      chars += invalidChars[0]
     }
-    case 'push': {
-      if (
-        github.context.payload &&
-        github.context.payload.commits &&
-        github.context.payload.commits.length
-      ) {
-        for (const i in github.context.payload.commits) {
-          if (github.context.payload.commits[i].message) {
-            messages.push(github.context.payload.commits[i].message)
-          }
-        }
-      }
-      if (messages.length === 0) {
-        throw new Error(`No commits found in the payload.`)
-      }
-      break
+    if (chars !== '') {
+      throw new Error(`FLAGS contains invalid characters "${chars}".`)
     }
-    default: {
-      throw new Error(`Event "${github.context.eventName}" is not supported.`)
-    }
-  }
 
-  return messages
+    if (args.error.length === 0) {
+      throw new Error(`ERROR not defined.`)
+    }
+}
+
+export function getOutput(commitInfos: any) {
+    const lines = commitInfos.map(function(info: any){return `  ${info.sha}    ${info.message}`})
+
+    return `The commit check failed
+${lines.join('\n')}`
 }

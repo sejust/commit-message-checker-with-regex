@@ -40,8 +40,6 @@ export function checkCommitMessages(
   args: ICheckerArguments,
   message: string,
 ): string {
-  core.info(`Checking commit messages against "${args.pattern}"...`)
-
   if (checkMessage(message, args.pattern, args.flags)) {
     return ''
   } else {

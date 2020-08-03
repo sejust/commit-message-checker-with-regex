@@ -15,6 +15,12 @@ inputs:
   error:
     description: 'A error message which will be returned in case of an error.'
     required: true
+  pre_error:
+    description: 'A error message which will be showed in the begin of errors'
+    required: false
+  post_error:
+    description: 'A error message which will be showed in the end of errors'
+    required: false
 runs:
   using: node12
   main: dist/index.js

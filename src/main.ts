@@ -31,6 +31,9 @@ async function run(): Promise<void> {
     const commits = JSON.parse(commitsString)
     const checkerArguments = inputHelper.getInputs()
 
+    const preErrorMsg = core.getInput('pre_error')
+    const postErrorMsg = core.getInput('post_error')
+
     const failed = []
 
     for (const {commit, sha} of commits) {
@@ -43,7 +46,7 @@ async function run(): Promise<void> {
     }
 
     if (failed.length > 0) {
-      const summary = inputHelper.getOutput(failed)
+      const summary = inputHelper.genOutput(failed, preErrorMsg, postErrorMsg)
       core.setFailed(summary)
     }
 

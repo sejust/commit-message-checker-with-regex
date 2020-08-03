@@ -63,9 +63,10 @@ export function checkArgs(args: any) {
     }
 }
 
-export function getOutput(commitInfos: any) {
+export function genOutput(commitInfos: any, preErrorMsg: string, postErrorMsg: string) {
     const lines = commitInfos.map(function(info: any){return `  ${info.sha}    ${info.message}`})
 
-    return `The commit check failed
-${lines.join('\n')}`
+    const errors = `${lines.join('\n')}`
+
+    return preErrorMsg + '\n\n' + errors + '\n\n' + postErrorMsg
 }

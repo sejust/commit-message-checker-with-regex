@@ -115,6 +115,8 @@ function run() {
             const commitsString = core.getInput('commits');
             const commits = JSON.parse(commitsString);
             const checkerArguments = inputHelper.getInputs();
+            const preErrorMsg = core.getInput('pre_error');
+            const postErrorMsg = core.getInput('post_error');
             const failed = [];
             for (const { commit, sha } of commits) {
                 inputHelper.checkArgs(checkerArguments);
@@ -124,7 +126,7 @@ function run() {
                 }
             }
             if (failed.length > 0) {
-                const summary = inputHelper.getOutput(failed);
+                const summary = inputHelper.genOutput(failed, preErrorMsg, postErrorMsg);
                 core.setFailed(summary);
             }
         }
@@ -143,7 +145,7 @@ run();
 /***/ }),
 
 /***/ 413:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
+/***/ (function(__unusedmodule, exports) {
 
 "use strict";
 
@@ -163,31 +165,8 @@ run();
  * For the full license information, please read the LICENSE file that
  * was distributed with this source code.
  */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkMessage = exports.checkCommitMessages = void 0;
-/**
- * Imports
- */
-const core = __importStar(__webpack_require__(470));
 /**
  * Checks commit messages given by args.
  *
@@ -195,7 +174,6 @@ const core = __importStar(__webpack_require__(470));
  * @returns   void
  */
 function checkCommitMessages(args, message) {
-    core.info(`Checking commit messages against "${args.pattern}"...`);
     if (checkMessage(message, args.pattern, args.flags)) {
         return '';
     }
@@ -596,7 +574,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOutput = exports.checkArgs = exports.getInputs = void 0;
+exports.genOutput = exports.checkArgs = exports.getInputs = void 0;
 /**
  * Imports
  */
@@ -636,12 +614,12 @@ function checkArgs(args) {
     }
 }
 exports.checkArgs = checkArgs;
-function getOutput(commitInfos) {
+function genOutput(commitInfos, preErrorMsg, postErrorMsg) {
     const lines = commitInfos.map(function (info) { return `  ${info.sha}    ${info.message}`; });
-    return `The commit check failed
-${lines.join('\n')}`;
+    const errors = `${lines.join('\n')}`;
+    return preErrorMsg + '\n\n' + errors + '\n\n' + postErrorMsg;
 }
-exports.getOutput = getOutput;
+exports.genOutput = genOutput;
 
 
 /***/ })

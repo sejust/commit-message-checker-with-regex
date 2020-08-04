@@ -11,16 +11,18 @@ inputs:
   flags:
     description: 'Expression flags change how the expression is interpreted.'
     required: false
-    default: 'gm'
+    default: ''
   error:
     description: 'A error message which will be returned in case of an error.'
     required: true
   pre_error:
     description: 'A error message which will be showed in the begin of errors'
     required: false
+    default: ''
   post_error:
     description: 'A error message which will be showed in the end of errors'
     required: false
+    default: ''
 runs:
   using: node12
   main: dist/index.js

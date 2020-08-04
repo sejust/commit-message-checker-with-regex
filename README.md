@@ -1,4 +1,4 @@
-# GS Commit Message Checker
+# Commit Messages(in Pull Reqeust) Checker with regex
 
 ![Version](https://img.shields.io/github/v/release/gsactions/commit-message-checker?style=flat-square)
 ![Test](https://github.com/gsactions/commit-message-checker/workflows/build-test/badge.svg)
@@ -32,32 +32,50 @@ on:
       - edited
       - reopened
       - synchronize
-  push:
-    branches:
-      - master
-      - 'releases/*'
 
 jobs:
   check-commit-message:
     name: Check Commit Message
     runs-on: ubuntu-latest
     steps:
-      - name: Check Commit Type
-        uses: gsactions/commit-message-checker@v1
+      - name: Get PR Commits
+        id: 'get-pr-commits'
+        uses: tim-actions/get-pr-commits@master
         with:
-          pattern: '\[[^]]+\] .+$'
-          flags: 'gm'
-          error: 'Your first line has to contain a commit type like "[BUGFIX]".'
-      - name: Check Line Length
-        uses: gsactions/commit-message-checker@v1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Subject Line Length
+        uses: tim-actions/commit-message-checker-with-regex@v0.1.0
         with:
-          pattern: '^[^#].{74}'
-          error: 'The maximum line length of 74 characters is exceeded.'
-      - name: Check for Resolves / Fixes
-        uses: gsactions/commit-message-checker@v1
+          commits: ${{ steps.get-pr-commits.outputs.commits }}
+          pattern: '^.{0,75}(\n.*)*$'
+          error: 'Subject too long (max 75)'
+
+      - name: Check Body Line Length
+        if: ${{ success() || failure() }}
+        uses: tim-actions/commit-message-checker-with-regex@v0.1.0
         with:
-          pattern: '^.+(Resolves|Fixes): \#[0-9]+$'
-          error: 'You need at least one "Resolves|Fixes: #<issue number>" line.'
+          commits: ${{ steps.get-pr-commits.outputs.commits }}
+          pattern: '^.+(\n.{0,72})*$'
+          error: 'Body line too long (max 72)'
+
+      - name: Check Fixes
+        if: ${{ success() || failure() }}
+        uses: tim-actions/commit-message-checker-with-regex@v0.1.0
+        with:
+          commits: ${{ steps.get-pr-commits.outputs.commits }}
+          pattern: '\s*Fixes\s*:?\s*(#\d+|github\.com\/kata-containers\/[a-z-.]*#\d+)'
+          error: 'No "Fixes" found'
+
+      - name: Check subsystem
+        if: ${{ success() || failure() }}
+        uses: tim-actions/commit-message-checker-with-regex@v0.1.0
+        with:
+          commits: ${{ steps.get-pr-commits.outputs.commits }}
+          pattern: '^[\h]*([^:\h]+)[\h]*:'
+          error: 'Failed to find subsystem in subject'
+
+
 ```
 
 ## Development

@@ -66,13 +66,14 @@ jobs:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '\s*Fixes\s*:?\s*(#\d+|github\.com\/kata-containers\/[a-z-.]*#\d+)'
           error: 'No "Fixes" found'
+          one_pass_all_pass: 'true'
 
       - name: Check subsystem
         if: ${{ success() || failure() }}
         uses: tim-actions/commit-message-checker-with-regex@v0.1.0
         with:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
-          pattern: '^[\h]*([^:\h]+)[\h]*:'
+          pattern: '^[\h]*([^:\h\n]+)[\h]*:'
           error: 'Failed to find subsystem in subject'
 
 

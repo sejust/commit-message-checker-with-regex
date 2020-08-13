@@ -27,6 +27,7 @@ import * as commitMessageChecker from './commit-message-checker'
  */
 async function run(): Promise<void> {
   try {
+    const onePassAllPass = core.getInput('one_pass_all_pass')
     const commitsString = core.getInput('commits')
     const commits = JSON.parse(commitsString)
     const checkerArguments = inputHelper.getInputs()
@@ -45,11 +46,14 @@ async function run(): Promise<void> {
       }
     }
 
+    if (onePassAllPass === 'true' && commits.length > failed.length) {
+      return
+    }
+
     if (failed.length > 0) {
       const summary = inputHelper.genOutput(failed, preErrorMsg, postErrorMsg)
       core.setFailed(summary)
     }
-
 
   } catch (error) {
     core.error(error)

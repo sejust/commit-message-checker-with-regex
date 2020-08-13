@@ -112,6 +112,7 @@ const commitMessageChecker = __importStar(__webpack_require__(413));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const onePassAllPass = core.getInput('one_pass_all_pass');
             const commitsString = core.getInput('commits');
             const commits = JSON.parse(commitsString);
             const checkerArguments = inputHelper.getInputs();
@@ -124,6 +125,9 @@ function run() {
                 if (errMsg) {
                     failed.push({ sha, message: errMsg });
                 }
+            }
+            if (onePassAllPass === 'true' && commits.length > failed.length) {
+                return;
             }
             if (failed.length > 0) {
                 const summary = inputHelper.genOutput(failed, preErrorMsg, postErrorMsg);

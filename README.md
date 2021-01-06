@@ -1,16 +1,16 @@
-# Commit Messages(in Pull Reqeust) Checker with regex
+# Commit Messages (in Pull Request) Checker with regex
 
 ![Version](https://img.shields.io/github/v/release/gsactions/commit-message-checker?style=flat-square)
 ![Test](https://github.com/gsactions/commit-message-checker/workflows/build-test/badge.svg)
 
-A GitHub action that checks that commit messages match a regex patter. The
+A GitHub action that checks that commit messages match a regex pattern. The
 action is able to act on pull request and push events and check the pull
 request title and body or the commit message of the commits of a push.
 
 On pull requests the title and body are concatenated delimited by two line
 breaks.
 
-Designed to be very flexible in usage you can split checks into various
+Designed to be very flexible in usage: you can split checks into various
 workflows, using action types on pull request to listen on, define branches
 for pushes etc. etc.
 
@@ -45,7 +45,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check Subject Line Length
-        uses: tim-actions/commit-message-checker-with-regex@v0.1.0
+        uses: tim-actions/commit-message-checker-with-regex@v1.0.0
         with:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '^.{0,75}(\n.*)*$'
@@ -53,7 +53,7 @@ jobs:
 
       - name: Check Body Line Length
         if: ${{ success() || failure() }}
-        uses: tim-actions/commit-message-checker-with-regex@v0.1.0
+        uses: tim-actions/commit-message-checker-with-regex@v0.3.1
         with:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '^.+(\n.{0,72})*$'
@@ -61,7 +61,7 @@ jobs:
 
       - name: Check Fixes
         if: ${{ success() || failure() }}
-        uses: tim-actions/commit-message-checker-with-regex@v0.1.0
+        uses: tim-actions/commit-message-checker-with-regex@v0.3.1
         with:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '\s*Fixes\s*:?\s*(#\d+|github\.com\/kata-containers\/[a-z-.]*#\d+)'
@@ -70,7 +70,7 @@ jobs:
 
       - name: Check subsystem
         if: ${{ success() || failure() }}
-        uses: tim-actions/commit-message-checker-with-regex@v0.1.0
+        uses: tim-actions/commit-message-checker-with-regex@v0.3.1
         with:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '^[\h]*([^:\h\n]+)[\h]*:'

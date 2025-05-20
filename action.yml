@@ -3,7 +3,7 @@ description: 'Check the commit message in pr against a regex pattern'
 author: 'Tim'
 inputs:
   commits:
-    description: 'commits in json format'
+    description: 'commits in json format, or a json file path'
     required: true
   pattern:
     description: 'A regex pattern to check if a commit message is valid.'

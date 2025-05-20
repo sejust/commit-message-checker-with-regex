@@ -22,6 +22,8 @@ import * as core from '@actions/core'
 import * as inputHelper from './input-helper'
 import * as commitMessageChecker from './commit-message-checker'
 
+const fs = require('fs')
+
 /**
  * Main function
  */
@@ -29,7 +31,13 @@ async function run(): Promise<void> {
   try {
     const onePassAllPass = core.getInput('one_pass_all_pass')
     const commitsString = core.getInput('commits')
-    const commits = JSON.parse(commitsString)
+    let commits
+    try {
+      commits = JSON.parse(commitsString)
+    } catch (je) {
+      const data = fs.readFileSync(commitsString, {encoding: 'utf8', flag: 'r'})
+      commits = JSON.parse(data)
+    }
     const checkerArguments = inputHelper.getInputs()
 
     const preErrorMsg = core.getInput('pre_error')
